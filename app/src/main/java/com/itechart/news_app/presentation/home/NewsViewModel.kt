@@ -1,5 +1,6 @@
 package com.itechart.news_app.presentation.home
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -18,10 +19,11 @@ class NewsViewModel(val newsUseCase: NewsUseCase) : ViewModel() {
     fun getNews() {
         viewModelScope.launch {
             try {
-                _isLoading.value = true
-                if (newsUseCase.getNews().isSuccess){
-                    _news.value = newsUseCase.getNews()
-                    _isLoading.value = false
+                _isLoading.postValue(true)
+                val news = newsUseCase.getNews()
+                if (news.isSuccess) {
+                    _news.value = news
+                    _isLoading.postValue(false)
                 }
             } catch (e: Exception) {
 

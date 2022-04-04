@@ -3,12 +3,11 @@ package com.itechart.news_app.data.model
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
-@JsonClass(generateAdapter = true)
 data class ArticlesDto(
-    @Json(name = "status")
+    @field:Json(name = "status")
     val status: String,
-    @Json(name = "totalResults")
+    @field:Json(name = "totalResults")
     val totalResults: Int,
-    @Json(name = "articles")
+    @field:Json(name = "articles")
     val articles: List<ArticleDto>
 )

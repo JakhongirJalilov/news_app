@@ -22,12 +22,12 @@ val apiModule = module {
             .build()
     }
     single<Retrofit> {
-        Log.d("ZZZ","created")
         Retrofit.Builder()
             .client(get())
             .baseUrl("https://newsapi.org")
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
+
     }
     single<NewsService> {
         get<Retrofit>().create(NewsService::class.java)

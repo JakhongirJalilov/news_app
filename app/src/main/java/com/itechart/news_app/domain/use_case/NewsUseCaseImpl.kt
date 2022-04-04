@@ -11,7 +11,6 @@ class NewsUseCaseImpl(
     private val dispatcher: CoroutineDispatcher
 ) : NewsUseCase {
     override suspend fun getNews(): Result<List<Article>> = withContext(dispatcher) {
-        Log.d("ZZZ","entered use case")
         newsRepository.getNews()
     }
 }
