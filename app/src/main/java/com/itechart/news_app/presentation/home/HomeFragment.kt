@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.itechart.news_app.databinding.FragmentHomeBinding
@@ -33,9 +34,11 @@ class HomeFragment : Fragment() {
         initRecycler()
         initData()
         initProgress()
+        initSearch()
     }
 
     private fun initProgress() {
+        binding.progressCircular.visibility = View.VISIBLE
         newsViewModel.isLoading.observe(viewLifecycleOwner) {
             if (!it) {
                 binding.progressCircular.visibility = View.GONE
@@ -44,10 +47,10 @@ class HomeFragment : Fragment() {
     }
 
     private fun initData() {
-        newsViewModel.getNews()
+        newsViewModel.getNews("everything")
         newsViewModel.news.observe(viewLifecycleOwner) {
             it.onSuccess { news ->
-                adapterNews.getNews(news)
+                adapterNews.submitList(news)
             }
         }
     }
@@ -57,6 +60,19 @@ class HomeFragment : Fragment() {
         binding.listNews.apply {
             adapter = adapterNews
             layoutManager = LinearLayoutManager(requireContext())
+        }
+    }
+
+    private fun initSearch() {
+        binding.txSearch.addTextChangedListener {
+            if (it.toString().length >= 3) {
+                newsViewModel.getNews(it.toString())
+            }
+        }
+        newsViewModel.news.observe(viewLifecycleOwner) {
+            it.onSuccess { news ->
+                adapterNews.submitList(news)
+            }
         }
     }
 }
