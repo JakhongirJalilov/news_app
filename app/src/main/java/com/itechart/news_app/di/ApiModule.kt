@@ -1,6 +1,5 @@
 package com.itechart.news_app.di
 
-import android.util.Log
 import com.chuckerteam.chucker.api.ChuckerInterceptor
 import com.itechart.news_app.data.api.NewsService
 import okhttp3.OkHttpClient
@@ -9,11 +8,13 @@ import org.koin.dsl.module
 import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 
+private const val BASE_URL = "https://newsapi.org"
+
 val apiModule = module {
     single {
-        val loggingInterceptor = HttpLoggingInterceptor()
-        loggingInterceptor.setLevel(HttpLoggingInterceptor.Level.BASIC)
-        loggingInterceptor
+        HttpLoggingInterceptor().apply {
+            setLevel(HttpLoggingInterceptor.Level.BASIC)
+        }
     }
     single {
         OkHttpClient.Builder()
@@ -24,10 +25,9 @@ val apiModule = module {
     single<Retrofit> {
         Retrofit.Builder()
             .client(get())
-            .baseUrl("https://newsapi.org")
+            .baseUrl(BASE_URL)
             .addConverterFactory(MoshiConverterFactory.create())
             .build()
-
     }
     single<NewsService> {
         get<Retrofit>().create(NewsService::class.java)

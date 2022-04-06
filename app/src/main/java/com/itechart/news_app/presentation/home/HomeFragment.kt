@@ -4,10 +4,17 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.itechart.news_app.databinding.FragmentHomeBinding
+import com.itechart.news_app.uitils.ResultWrapper
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import org.koin.androidx.viewmodel.ext.android.viewModel
 
 /**
@@ -33,24 +40,30 @@ class HomeFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         initRecycler()
         initData()
-        initProgress()
         initSearch()
-    }
-
-    private fun initProgress() {
-        binding.progressCircular.visibility = View.VISIBLE
-        newsViewModel.isLoading.observe(viewLifecycleOwner) {
-            if (!it) {
-                binding.progressCircular.visibility = View.GONE
-            }
-        }
     }
 
     private fun initData() {
         newsViewModel.getNews("everything")
-        newsViewModel.news.observe(viewLifecycleOwner) {
-            it.onSuccess { news ->
-                adapterNews.submitList(news)
+        lifecycleScope.launch {
+            withContext(Dispatchers.Main) {
+                newsViewModel.news.collectLatest {
+                    when (it) {
+                        is ResultWrapper.Success -> {
+                            binding.progressCircular.visibility = View.GONE
+                            adapterNews.submitList(it.data)
+                        }
+                        is ResultWrapper.Error -> {
+                            binding.progressCircular.visibility = View.GONE
+                            Toast.makeText(requireContext(), "${it.message}", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                        is ResultWrapper.Loading -> {
+                            binding.progressCircular.visibility = View.VISIBLE
+                        }
+                    }
+
+                }
             }
         }
     }
@@ -67,11 +80,6 @@ class HomeFragment : Fragment() {
         binding.txSearch.addTextChangedListener {
             if (it.toString().length >= 3) {
                 newsViewModel.getNews(it.toString())
-            }
-        }
-        newsViewModel.news.observe(viewLifecycleOwner) {
-            it.onSuccess { news ->
-                adapterNews.submitList(news)
             }
         }
     }
