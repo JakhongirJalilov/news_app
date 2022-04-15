@@ -2,6 +2,8 @@ package com.itechart.news_app.presentation.home
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.paging.Pager
+import androidx.paging.PagingConfig
 import com.itechart.news_app.domain.model.Article
 import com.itechart.news_app.domain.use_case.NewsUseCase
 import com.itechart.news_app.uitils.ResultWrapper
@@ -10,7 +12,7 @@ import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
 class NewsViewModel(private val newsUseCase: NewsUseCase) : ViewModel() {
-    private val _news = MutableSharedFlow<ResultWrapper<List<Article>>>()
+    private var _news = MutableSharedFlow<ResultWrapper<List<Article>>>()
     val news: MutableSharedFlow<ResultWrapper<List<Article>>> = _news
 
     fun getNews(search: String) {
