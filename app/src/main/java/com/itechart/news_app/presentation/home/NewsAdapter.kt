@@ -2,22 +2,22 @@ package com.itechart.news_app.presentation.home
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
+import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
-import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
 import com.itechart.news_app.databinding.ItemNewsBinding
 import com.itechart.news_app.domain.model.Article
 
-class NewsAdapter : ListAdapter<Article, NewsAdapter.ViewHolder>(NewsDiffCallback()) {
+class NewsAdapter : PagingDataAdapter<Article, NewsAdapter.ViewHolder>(NewsDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int) = ViewHolder(
         ItemNewsBinding.inflate(LayoutInflater.from(parent.context), parent, false)
     )
 
-    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(getItem(position))
+    override fun onBindViewHolder(holder: ViewHolder, position: Int) = holder.bind(getItem(position)!!)
 
-    inner class ViewHolder(val binding: ItemNewsBinding) : RecyclerView.ViewHolder(binding.root) {
+    inner class ViewHolder(private val binding: ItemNewsBinding) : RecyclerView.ViewHolder(binding.root) {
         fun bind(data: Article) {
             binding.apply {
                 Glide

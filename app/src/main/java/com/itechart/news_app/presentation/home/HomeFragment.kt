@@ -51,7 +51,7 @@ class HomeFragment : Fragment() {
                     when (it) {
                         is ResultWrapper.Success -> {
                             binding.progressCircular.visibility = View.GONE
-                            adapterNews.submitList(it.data)
+                            it.data?.let { it1 -> adapterNews.submitData(it1) }
                         }
                         is ResultWrapper.Error -> {
                             binding.progressCircular.visibility = View.GONE
@@ -79,6 +79,7 @@ class HomeFragment : Fragment() {
     private fun initSearch() {
         binding.txSearch.addTextChangedListener {
             if (it.toString().length >= 3) {
+                binding.progressCircular.visibility = View.VISIBLE
                 newsViewModel.getNews(it.toString())
             }
         }

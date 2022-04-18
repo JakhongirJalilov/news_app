@@ -5,6 +5,7 @@ import androidx.paging.PagingState
 import com.itechart.news_app.BuildConfig
 import com.itechart.news_app.data.api.NewsService
 import com.itechart.news_app.domain.model.Article
+import retrofit2.HttpException
 
 class NewsPagingSource(
     private val newsService: NewsService,
@@ -18,10 +19,14 @@ class NewsPagingSource(
     }
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, Article> {
+        if (search.isBlank()) {
+            return LoadResult.Page(emptyList(), prevKey = null, nextKey = null)
+        }
+
         return try {
             // Start refresh at page 1 if undefined.
             val page = params.key ?: 1
-            val pageSize = params.loadSize
+            val pageSize = params.loadSize.coerceAtMost(NewsService.MAX_PAGE_SIZE)
             val response = newsService.getNews(search, BuildConfig.API_KEY, pageSize, page)
 
             val articles = checkNotNull(response.articles.map { it.toArticle() })
@@ -30,10 +35,10 @@ class NewsPagingSource(
                 prevKey = if (page == 1) null else page - 1, // Only paging forward.
                 nextKey = if (articles.size < pageSize) null else page + 1
             )
+        } catch (e: HttpException) {
+            LoadResult.Error(e)
         } catch (e: Exception) {
             LoadResult.Error(e)
-            // Handle errors in this block and return LoadResult.Error if it is an
-            // expected error (such as a network failure).
         }
     }
 }
