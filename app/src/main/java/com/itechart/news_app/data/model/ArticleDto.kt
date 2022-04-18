@@ -18,7 +18,7 @@ data class ArticleDto(
     @field:Json(name = "url")
     val url: String,
     @field:Json(name = "urlToImage")
-    val urlToImage: String
+    val urlToImage: String?
 ) {
     fun toArticle(): Article = Article(
         author = author ?: "",

@@ -10,5 +10,5 @@ data class Article(
 //    val sourceDto: SourceDto,
     val title: String,
     val url: String,
-    val urlToImage: String
+    val urlToImage: String?
 )

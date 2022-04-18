@@ -5,13 +5,16 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.core.view.isVisible
 import androidx.core.widget.addTextChangedListener
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.itechart.news_app.databinding.FragmentHomeBinding
 import com.itechart.news_app.uitils.ResultWrapper
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
@@ -44,7 +47,6 @@ class HomeFragment : Fragment() {
     }
 
     private fun initData() {
-        newsViewModel.getNews("everything")
         lifecycleScope.launch {
             withContext(Dispatchers.Main) {
                 newsViewModel.news.collectLatest {
@@ -66,13 +68,45 @@ class HomeFragment : Fragment() {
                 }
             }
         }
+        newsViewModel.getNews("everything")
     }
 
     private fun initRecycler() {
         adapterNews = NewsAdapter()
         binding.listNews.apply {
-            adapter = adapterNews
+            adapter = adapterNews.withLoadStateHeaderAndFooter(
+                header = NewsLoadStateAdapter { adapterNews.retry() },
+                footer = NewsLoadStateAdapter { adapterNews.retry() }
+            )
             layoutManager = LinearLayoutManager(requireContext())
+        }
+        binding.retryButton.setOnClickListener { adapterNews.retry() }
+        lifecycleScope.launch {
+            adapterNews.loadStateFlow.collect { loadState ->
+                val isListEmpty =
+                    loadState.refresh is LoadState.NotLoading && adapterNews.itemCount == 0
+                // show empty list
+//                emptyList.isVisible = isListEmpty
+                binding.progressCircular.isVisible = isListEmpty
+                // Only show the list if refresh succeeds.
+                binding.listNews.isVisible = !isListEmpty
+
+                binding.retryButton.isVisible = loadState.source.refresh is LoadState.Error
+
+                // Toast on any error, regardless of whether it came from RemoteMediator or PagingSource
+                val errorState = loadState.source.append as? LoadState.Error
+                    ?: loadState.source.prepend as? LoadState.Error
+                    ?: loadState.append as? LoadState.Error
+                    ?: loadState.prepend as? LoadState.Error
+
+                errorState?.let {
+                    Toast.makeText(
+                        requireContext(),
+                        "\uD83D\uDE28 Wooops ${it.error}",
+                        Toast.LENGTH_LONG
+                    ).show()
+                }
+            }
         }
     }
 
