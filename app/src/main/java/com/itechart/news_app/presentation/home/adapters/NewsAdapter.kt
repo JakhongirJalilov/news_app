@@ -1,4 +1,4 @@
-package com.itechart.news_app.presentation.home
+package com.itechart.news_app.presentation.home.adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup

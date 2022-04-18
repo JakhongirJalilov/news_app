@@ -12,6 +12,8 @@ import androidx.lifecycle.lifecycleScope
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.itechart.news_app.databinding.FragmentHomeBinding
+import com.itechart.news_app.presentation.home.adapters.NewsAdapter
+import com.itechart.news_app.presentation.home.adapters.NewsLoadStateAdapter
 import com.itechart.news_app.uitils.ResultWrapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.collect
