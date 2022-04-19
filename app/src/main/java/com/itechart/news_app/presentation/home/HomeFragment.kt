@@ -120,10 +120,10 @@ class HomeFragment : Fragment() {
     }
 
     private fun initSearch() {
-        binding.txSearch.addTextChangedListener {
-            if (it.toString().length >= 3) {
+        binding.txSearch.addTextChangedListener { txSearch ->
+            if (txSearch.toString().length >= 3) {
                 binding.progressCircular.visibility = View.VISIBLE
-                newsViewModel.getNews(it.toString())
+                newsViewModel.getNews(txSearch.toString())
             }
         }
     }
