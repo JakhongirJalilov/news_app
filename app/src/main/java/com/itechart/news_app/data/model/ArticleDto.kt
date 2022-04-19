@@ -1,6 +1,7 @@
 package com.itechart.news_app.data.model
 
 import com.itechart.news_app.domain.model.Article
+import com.itechart.news_app.uitils.EMPTY
 import com.squareup.moshi.Json
 import com.squareup.moshi.JsonClass
 
@@ -21,7 +22,7 @@ data class ArticleDto(
     val urlToImage: String?
 ) {
     fun toArticle(): Article = Article(
-        author = author ?: "",
+        author = author ?: String.EMPTY,
         content = content,
         description = description,
         publishedAt = publishedAt,

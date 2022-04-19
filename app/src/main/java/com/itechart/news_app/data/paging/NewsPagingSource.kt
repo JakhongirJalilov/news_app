@@ -7,6 +7,8 @@ import com.itechart.news_app.data.api.NewsService
 import com.itechart.news_app.domain.model.Article
 import retrofit2.HttpException
 
+private const val FIRST_PAGE = 1
+
 class NewsPagingSource(
     private val newsService: NewsService,
     private val search: String
@@ -25,15 +27,15 @@ class NewsPagingSource(
 
         return try {
             // Start refresh at page 1 if undefined.
-            val page = params.key ?: 1
+            val page = params.key ?: FIRST_PAGE
             val pageSize = params.loadSize.coerceAtMost(NewsService.MAX_PAGE_SIZE)
             val response = newsService.getNews(search, BuildConfig.API_KEY, pageSize, page)
 
             val articles = checkNotNull(response.articles.map { it.toArticle() })
             LoadResult.Page(
                 data = articles,
-                prevKey = if (page == 1) null else page - 1, // Only paging forward.
-                nextKey = if (articles.size < pageSize) null else page + 1
+                prevKey = if (page == FIRST_PAGE) null else page.dec(), // Only paging forward.
+                nextKey = if (articles.size < pageSize) null else page.inc()
             )
         } catch (e: HttpException) {
             LoadResult.Error(e)

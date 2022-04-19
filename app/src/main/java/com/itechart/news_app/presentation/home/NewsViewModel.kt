@@ -17,12 +17,8 @@ class NewsViewModel(private val newsUseCase: NewsUseCase) : ViewModel() {
     fun getNews(search: String) {
         viewModelScope.launch {
             ResultWrapper.Loading
-            try {
-                newsUseCase.getNews(search).collectLatest {
-                    _news.emit(ResultWrapper.Success(it))
-                }
-            } catch (e: Exception) {
-                e.message?.let { ResultWrapper.Error(it) }
+            newsUseCase.getNews(search).collectLatest { pagingData ->
+                _news.emit(ResultWrapper.Success(pagingData))
             }
         }
     }

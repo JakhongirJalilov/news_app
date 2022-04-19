@@ -28,7 +28,10 @@ import org.koin.androidx.viewmodel.ext.android.viewModel
  * create an instance of this fragment.
  */
 class HomeFragment : Fragment() {
-    private lateinit var binding: FragmentHomeBinding
+    private var _binding: FragmentHomeBinding? = null
+    private val binding
+        get() = _binding!!
+
     private lateinit var adapterNews: NewsAdapter
     private val newsViewModel: NewsViewModel by viewModel()
 
@@ -37,7 +40,7 @@ class HomeFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View {
         // Inflate the layout for this fragment
-        binding = FragmentHomeBinding.inflate(layoutInflater)
+        _binding = FragmentHomeBinding.inflate(layoutInflater)
         return binding.root
     }
 
@@ -51,15 +54,19 @@ class HomeFragment : Fragment() {
     private fun initData() {
         lifecycleScope.launch {
             withContext(Dispatchers.Main) {
-                newsViewModel.news.collectLatest {
-                    when (it) {
+                newsViewModel.news.collectLatest { pagingData ->
+                    when (pagingData) {
                         is ResultWrapper.Success -> {
                             binding.progressCircular.visibility = View.GONE
-                            it.data?.let { it1 -> adapterNews.submitData(it1) }
+                            pagingData.data?.let { it1 -> adapterNews.submitData(it1) }
                         }
                         is ResultWrapper.Error -> {
                             binding.progressCircular.visibility = View.GONE
-                            Toast.makeText(requireContext(), "${it.message}", Toast.LENGTH_SHORT)
+                            Toast.makeText(
+                                requireContext(),
+                                "${pagingData.message}",
+                                Toast.LENGTH_SHORT
+                            )
                                 .show()
                         }
                         is ResultWrapper.Loading -> {
@@ -119,5 +126,10 @@ class HomeFragment : Fragment() {
                 newsViewModel.getNews(it.toString())
             }
         }
+    }
+
+    override fun onDestroy() {
+        _binding = null
+        super.onDestroy()
     }
 }
