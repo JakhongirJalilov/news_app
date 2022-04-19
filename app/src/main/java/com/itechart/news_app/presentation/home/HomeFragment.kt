@@ -95,8 +95,7 @@ class HomeFragment : Fragment() {
                 val isListEmpty =
                     loadState.refresh is LoadState.NotLoading && adapterNews.itemCount == 0
                 // show empty list
-//                emptyList.isVisible = isListEmpty
-                binding.progressCircular.isVisible = isListEmpty
+                binding.emptyView.isVisible = isListEmpty
                 // Only show the list if refresh succeeds.
                 binding.listNews.isVisible = !isListEmpty
 
