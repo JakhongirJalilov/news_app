@@ -1,0 +1,62 @@
+package com.itechart.news_app.data.repository
+
+import androidx.paging.PagingSource
+import com.appmattus.kotlinfixture.decorator.nullability.NeverNullStrategy
+import com.appmattus.kotlinfixture.decorator.nullability.nullabilityStrategy
+import com.appmattus.kotlinfixture.kotlinFixture
+import com.itechart.news_app.BuildConfig
+import com.itechart.news_app.data.api.NewsService
+import com.itechart.news_app.data.model.ArticlesDto
+import com.itechart.news_app.data.paging.NewsPagingSource
+import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.test.runTest
+import org.junit.Assert.assertEquals
+import org.junit.Before
+import org.junit.Test
+import org.mockito.Mock
+import org.mockito.MockitoAnnotations
+import org.mockito.kotlin.given
+
+@ExperimentalCoroutinesApi
+class NewsRepositoryImplTest {
+
+    companion object {
+        private val fixture = kotlinFixture {
+            nullabilityStrategy(NeverNullStrategy)
+        }
+        val articlesResponse = ArticlesDto(
+            "200",
+            100,
+            fixture()
+        )
+    }
+
+    @Mock
+    lateinit var api: NewsService
+    lateinit var articlesPagingSource: NewsPagingSource
+
+    @Before
+    fun setUp() {
+        MockitoAnnotations.openMocks(this)
+        articlesPagingSource = NewsPagingSource(api, "string")
+    }
+
+    @Test
+    fun `get articles paging source refresh success`() = runTest {
+        given(api.getNews("q", BuildConfig.API_KEY)).willReturn(articlesResponse)
+        assertEquals(
+            expected = PagingSource.LoadResult.Page(
+                data = articlesResponse.articles.map { it.toArticle() },
+                prevKey = null,
+                nextKey = 1
+            ),
+            actual = articlesPagingSource.load(
+                PagingSource.LoadParams.Refresh(
+                    key = 0,
+                    loadSize = 1,
+                    placeholdersEnabled = false
+                )
+            )
+        )
+    }
+}
