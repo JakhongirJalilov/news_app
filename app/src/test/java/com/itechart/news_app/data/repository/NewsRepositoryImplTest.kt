@@ -12,8 +12,10 @@ import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
+import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.given
+import org.mockito.kotlin.times
 
 /**
 TODO:
@@ -48,9 +50,7 @@ class NewsRepositoryImplTest {
     @Test
     fun `get articles success`() = runTest {
         given(api.getNews("everything", BuildConfig.API_KEY)).willReturn(articlesResponse)
-
         val result = api.getNews("everything", BuildConfig.API_KEY)
-
 //        verify(api.getNews("everything", BuildConfig.API_KEY))
         assertEquals(articlesResponse, result)
     }
@@ -58,11 +58,16 @@ class NewsRepositoryImplTest {
     @Test
     fun `get articles null`() = runTest {
         given(api.getNews("everything", BuildConfig.API_KEY)).willReturn(null)
-
         val result = api.getNews("everything", BuildConfig.API_KEY)
-
 //        verify(api.getNews("everything", BuildConfig.API_KEY))
         assertEquals(null, result)
+    }
+
+    @Test
+    fun `get articles called once`() = runTest {
+        given(api.getNews("everything", BuildConfig.API_KEY)).willReturn(articlesResponse)
+        api.getNews("everything", BuildConfig.API_KEY)
+        verify(api, times(1)).getNews("everything", BuildConfig.API_KEY)
     }
 
 }
