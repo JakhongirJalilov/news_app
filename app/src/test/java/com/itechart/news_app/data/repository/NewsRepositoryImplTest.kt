@@ -1,13 +1,11 @@
 package com.itechart.news_app.data.repository
 
-import androidx.paging.PagingSource
 import com.appmattus.kotlinfixture.decorator.nullability.NeverNullStrategy
 import com.appmattus.kotlinfixture.decorator.nullability.nullabilityStrategy
 import com.appmattus.kotlinfixture.kotlinFixture
 import com.itechart.news_app.BuildConfig
 import com.itechart.news_app.data.api.NewsService
 import com.itechart.news_app.data.model.ArticlesDto
-import com.itechart.news_app.data.paging.NewsPagingSource
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
@@ -16,6 +14,14 @@ import org.junit.Test
 import org.mockito.Mock
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.given
+
+/**
+TODO:
+ * How to mock API service?
+ * How to check methods with mock response?
+ * How to mock Repository and call api service with error result?
+ * How to test and check LiveData?
+ */
 
 @ExperimentalCoroutinesApi
 class NewsRepositoryImplTest {
@@ -33,30 +39,30 @@ class NewsRepositoryImplTest {
 
     @Mock
     lateinit var api: NewsService
-    lateinit var articlesPagingSource: NewsPagingSource
 
     @Before
     fun setUp() {
         MockitoAnnotations.openMocks(this)
-        articlesPagingSource = NewsPagingSource(api, "string")
     }
 
     @Test
-    fun `get articles paging source refresh success`() = runTest {
-        given(api.getNews("q", BuildConfig.API_KEY)).willReturn(articlesResponse)
-        assertEquals(
-            expected = PagingSource.LoadResult.Page(
-                data = articlesResponse.articles.map { it.toArticle() },
-                prevKey = null,
-                nextKey = 1
-            ),
-            actual = articlesPagingSource.load(
-                PagingSource.LoadParams.Refresh(
-                    key = 0,
-                    loadSize = 1,
-                    placeholdersEnabled = false
-                )
-            )
-        )
+    fun `get articles success`() = runTest {
+        given(api.getNews("everything", BuildConfig.API_KEY)).willReturn(articlesResponse)
+
+        val result = api.getNews("everything", BuildConfig.API_KEY)
+
+//        verify(api.getNews("everything", BuildConfig.API_KEY))
+        assertEquals(articlesResponse, result)
     }
+
+    @Test
+    fun `get articles null`() = runTest {
+        given(api.getNews("everything", BuildConfig.API_KEY)).willReturn(null)
+
+        val result = api.getNews("everything", BuildConfig.API_KEY)
+
+//        verify(api.getNews("everything", BuildConfig.API_KEY))
+        assertEquals(null, result)
+    }
+
 }
