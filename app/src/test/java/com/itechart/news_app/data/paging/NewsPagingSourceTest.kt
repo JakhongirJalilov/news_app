@@ -54,18 +54,6 @@ class NewsPagingSourceTest {
                 placeholdersEnabled = false
             )
         )
-        Log.d("ZZZ","${PagingSource.LoadResult.Page(
-            data = articlesResponse.articles.map { it.toArticle() },
-            prevKey = null,
-            nextKey = 1
-        )}")
-        Log.d("ZZZ","${articlesPagingSource.load(
-            PagingSource.LoadParams.Refresh(
-                key = null,
-                loadSize = 2,
-                placeholdersEnabled = false
-            )
-        )}")
         assertEquals(false, result)
     }
 }

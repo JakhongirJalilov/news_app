@@ -1,21 +1,35 @@
 package com.itechart.news_app.data.repository
 
+import androidx.arch.core.executor.testing.InstantTaskExecutorRule
+import androidx.paging.map
 import com.appmattus.kotlinfixture.decorator.nullability.NeverNullStrategy
 import com.appmattus.kotlinfixture.decorator.nullability.nullabilityStrategy
 import com.appmattus.kotlinfixture.kotlinFixture
 import com.itechart.news_app.BuildConfig
+import com.itechart.news_app.MainCoroutineRule
 import com.itechart.news_app.data.api.NewsService
+import com.itechart.news_app.data.model.ArticleDto
 import com.itechart.news_app.data.model.ArticlesDto
+import com.itechart.news_app.domain.model.Article
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.flow.collect
+import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.runBlocking
+import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
+import org.junit.Rule
 import org.junit.Test
+import org.mockito.InjectMocks
 import org.mockito.Mock
+import org.mockito.Mockito
 import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.given
 import org.mockito.kotlin.times
+import org.mockito.stubbing.OngoingStubbing
 
 /**
 TODO:
@@ -28,19 +42,28 @@ TODO:
 @ExperimentalCoroutinesApi
 class NewsRepositoryImplTest {
 
-    companion object {
-        private val fixture = kotlinFixture {
-            nullabilityStrategy(NeverNullStrategy)
-        }
-        val articlesResponse = ArticlesDto(
-            "200",
-            100,
-            fixture()
-        )
+    private val fixture = kotlinFixture {
+        nullabilityStrategy(NeverNullStrategy)
     }
+
+    val articlesResponse = ArticlesDto(
+        "200",
+        100,
+        fixture()
+    )
+
+    @get:Rule
+    var mainCoroutineRule = MainCoroutineRule()
+
+    @get:Rule
+    var instantExecutorRule = InstantTaskExecutorRule()
 
     @Mock
     lateinit var api: NewsService
+
+    @InjectMocks
+    lateinit var repo: NewsRepositoryImpl
+
 
     @Before
     fun setUp() {
@@ -48,12 +71,28 @@ class NewsRepositoryImplTest {
     }
 
     @Test
-    fun `get articles success`() = runTest {
-        given(api.getNews("everything", BuildConfig.API_KEY)).willReturn(articlesResponse)
-        val result = api.getNews("everything", BuildConfig.API_KEY)
-//        verify(api.getNews("everything", BuildConfig.API_KEY))
-        assertEquals(articlesResponse, result)
+    fun `get articles success`() = runBlocking {
+        val articleResponse: ArticlesDto = fixture()
+        given(api.getNews("everything", BuildConfig.API_KEY)).willReturn(articleResponse)
+
+        val flow = repo.getNews("everything").first().map { article ->
+            articleResponse.articles.forEach { i ->
+                assert(article == i.toArticle())
+            }
+        }
     }
+
+//    @Test
+//    fun `get articles success`() = runBlocking {
+//        val articleResponse: ArticlesDto = fixture()
+//        val flowResponse = mutableListOf<Article>()
+//        given(api.getNews("everything", BuildConfig.API_KEY)).willReturn(articleResponse)
+//
+//        repo.getNews("everything").first().map { article ->
+//            flowResponse.add(article)
+//        }
+//        assertEquals(articlesResponse.articles, flowResponse)
+//    }
 
     @Test
     fun `get articles null`() = runTest {

@@ -77,5 +77,6 @@ dependencies {
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:$coroutinesVersion"
     testImplementation "org.mockito.kotlin:mockito-kotlin:$mockitoVersion"
     testImplementation "com.appmattus.fixture:fixture:$fixtureVersion"
+    testImplementation "androidx.arch.core:core-testing:$archTestingVersion"
 
 }
