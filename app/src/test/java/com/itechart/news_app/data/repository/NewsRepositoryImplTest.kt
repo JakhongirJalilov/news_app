@@ -8,15 +8,10 @@ import com.appmattus.kotlinfixture.kotlinFixture
 import com.itechart.news_app.BuildConfig
 import com.itechart.news_app.MainCoroutineRule
 import com.itechart.news_app.data.api.NewsService
-import com.itechart.news_app.data.model.ArticleDto
 import com.itechart.news_app.data.model.ArticlesDto
-import com.itechart.news_app.domain.model.Article
 import kotlinx.coroutines.ExperimentalCoroutinesApi
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.runBlocking
-import kotlinx.coroutines.test.runBlockingTest
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert.assertEquals
 import org.junit.Before
@@ -24,12 +19,10 @@ import org.junit.Rule
 import org.junit.Test
 import org.mockito.InjectMocks
 import org.mockito.Mock
-import org.mockito.Mockito
 import org.mockito.Mockito.verify
 import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.given
 import org.mockito.kotlin.times
-import org.mockito.stubbing.OngoingStubbing
 
 /**
 TODO:
@@ -71,13 +64,15 @@ class NewsRepositoryImplTest {
     }
 
     @Test
-    fun `get articles success`() = runBlocking {
-        val articleResponse: ArticlesDto = fixture()
-        given(api.getNews("everything", BuildConfig.API_KEY)).willReturn(articleResponse)
+    fun `get articles success`() {
+        runBlocking {
+            val articleResponse: ArticlesDto = fixture()
+            given(api.getNews("everything", BuildConfig.API_KEY)).willReturn(articleResponse)
 
-        val flow = repo.getNews("everything").first().map { article ->
-            articleResponse.articles.forEach { i ->
-                assert(article == i.toArticle())
+           repo.getNews("everything").first().map { article ->
+                articleResponse.articles.forEach { i ->
+                    assert(article == i.toArticle())
+                }
             }
         }
     }
