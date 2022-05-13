@@ -39,12 +39,6 @@ class NewsRepositoryImplTest {
         nullabilityStrategy(NeverNullStrategy)
     }
 
-    val articlesResponse = ArticlesDto(
-        "200",
-        100,
-        fixture()
-    )
-
     @get:Rule
     var mainCoroutineRule = MainCoroutineRule()
 
@@ -68,6 +62,18 @@ class NewsRepositoryImplTest {
         runBlocking {
             val articleResponse: ArticlesDto = fixture()
            newsRepository.getNews("everything").first().map { article ->
+                articleResponse.articles.forEach { i ->
+                    assert(article == i.toArticle())
+                }
+            }
+        }
+    }
+
+    @Test
+    fun `get articles empty`() {
+        runBlocking {
+            val articleResponse = ArticlesDto("200", 0, emptyList())
+            newsRepository.getNews("everything").first().map { article ->
                 articleResponse.articles.forEach { i ->
                     assert(article == i.toArticle())
                 }
@@ -110,6 +116,11 @@ class NewsRepositoryImplTest {
 
     @Test
     fun `get articles called once`() = runTest {
+        val articlesResponse = ArticlesDto(
+            "200",
+            100,
+            fixture()
+        )
         given(api.getNews("everything", BuildConfig.API_KEY)).willReturn(articlesResponse)
         api.getNews("everything", BuildConfig.API_KEY)
         verify(api, times(1)).getNews("everything", BuildConfig.API_KEY)

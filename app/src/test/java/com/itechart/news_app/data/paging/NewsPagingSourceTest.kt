@@ -1,6 +1,5 @@
 package com.itechart.news_app.data.paging
 
-import android.util.Log
 import androidx.paging.PagingSource
 import com.appmattus.kotlinfixture.decorator.nullability.NeverNullStrategy
 import com.appmattus.kotlinfixture.decorator.nullability.nullabilityStrategy
@@ -10,7 +9,7 @@ import com.itechart.news_app.data.api.NewsService
 import com.itechart.news_app.data.model.ArticlesDto
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
-import org.junit.Assert.*
+import org.junit.Assert.assertEquals
 import org.junit.Before
 import org.junit.Test
 import org.mockito.Mock
