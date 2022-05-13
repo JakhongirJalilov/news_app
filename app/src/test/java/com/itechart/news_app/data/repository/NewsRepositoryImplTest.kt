@@ -55,7 +55,7 @@ class NewsRepositoryImplTest {
     lateinit var api: NewsService
 
     @InjectMocks
-    lateinit var repo: NewsRepositoryImpl
+    lateinit var newsRepository: NewsRepositoryImpl
 
 
     @Before
@@ -67,15 +67,26 @@ class NewsRepositoryImplTest {
     fun `get articles success`() {
         runBlocking {
             val articleResponse: ArticlesDto = fixture()
-            given(api.getNews("everything", BuildConfig.API_KEY)).willReturn(articleResponse)
-
-           repo.getNews("everything").first().map { article ->
+           newsRepository.getNews("everything").first().map { article ->
                 articleResponse.articles.forEach { i ->
                     assert(article == i.toArticle())
                 }
             }
         }
     }
+
+//    @Test
+//    fun `get empty as response in articles`(){
+//        runBlocking {
+//            val articleResponse = mutableListOf<Article>()
+//            newsRepository.getNews("everything").first().map {
+//                articleResponse.add(it)
+//            }
+//            assert(articleResponse.isEmpty())
+//        }
+//    }
+
+
 
 //    @Test
 //    fun `get articles success`() = runBlocking {
