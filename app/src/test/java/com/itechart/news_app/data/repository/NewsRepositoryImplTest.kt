@@ -6,7 +6,6 @@ import com.appmattus.kotlinfixture.decorator.nullability.NeverNullStrategy
 import com.appmattus.kotlinfixture.decorator.nullability.nullabilityStrategy
 import com.appmattus.kotlinfixture.kotlinFixture
 import com.itechart.news_app.BuildConfig
-import com.itechart.news_app.MainCoroutineRule
 import com.itechart.news_app.data.api.NewsService
 import com.itechart.news_app.data.model.ArticlesDto
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -38,9 +37,6 @@ class NewsRepositoryImplTest {
     private val fixture = kotlinFixture {
         nullabilityStrategy(NeverNullStrategy)
     }
-
-    @get:Rule
-    var mainCoroutineRule = MainCoroutineRule()
 
     @get:Rule
     var instantExecutorRule = InstantTaskExecutorRule()
@@ -81,36 +77,10 @@ class NewsRepositoryImplTest {
         }
     }
 
-//    @Test
-//    fun `get empty as response in articles`(){
-//        runBlocking {
-//            val articleResponse = mutableListOf<Article>()
-//            newsRepository.getNews("everything").first().map {
-//                articleResponse.add(it)
-//            }
-//            assert(articleResponse.isEmpty())
-//        }
-//    }
-
-
-
-//    @Test
-//    fun `get articles success`() = runBlocking {
-//        val articleResponse: ArticlesDto = fixture()
-//        val flowResponse = mutableListOf<Article>()
-//        given(api.getNews("everything", BuildConfig.API_KEY)).willReturn(articleResponse)
-//
-//        repo.getNews("everything").first().map { article ->
-//            flowResponse.add(article)
-//        }
-//        assertEquals(articlesResponse.articles, flowResponse)
-//    }
-
     @Test
     fun `get articles null`() = runTest {
         given(api.getNews("everything", BuildConfig.API_KEY)).willReturn(null)
         val result = api.getNews("everything", BuildConfig.API_KEY)
-//        verify(api.getNews("everything", BuildConfig.API_KEY))
         assertEquals(null, result)
     }
 

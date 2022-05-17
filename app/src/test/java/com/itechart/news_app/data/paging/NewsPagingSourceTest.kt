@@ -40,7 +40,7 @@ class NewsPagingSourceTest {
     }
 
     @Test
-    fun `get articles paging source refresh success`() = runTest {
+    fun `get articles paging source refresh fail`() = runTest {
                 given(api.getNews("q", BuildConfig.API_KEY)).willReturn(articlesResponse)
         val result : Boolean = PagingSource.LoadResult.Page(
             data = articlesResponse.articles.map { it.toArticle() },

@@ -110,7 +110,7 @@ class HomeFragment : Fragment() {
                 errorState?.let {
                     Toast.makeText(
                         requireContext(),
-                        "\uD83D\uDE28 Wooops ${it.error}",
+                        "${it.error}",
                         Toast.LENGTH_LONG
                     ).show()
                 }

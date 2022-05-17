@@ -4,7 +4,6 @@ import androidx.paging.map
 import com.appmattus.kotlinfixture.decorator.nullability.NeverNullStrategy
 import com.appmattus.kotlinfixture.decorator.nullability.nullabilityStrategy
 import com.appmattus.kotlinfixture.kotlinFixture
-import com.itechart.news_app.MainCoroutineRule
 import com.itechart.news_app.data.api.NewsService
 import com.itechart.news_app.data.model.ArticlesDto
 import com.itechart.news_app.data.repository.NewsRepositoryImpl
@@ -17,7 +16,6 @@ import kotlinx.coroutines.test.runTest
 import kotlinx.coroutines.test.setMain
 import org.junit.After
 import org.junit.Before
-import org.junit.Rule
 import org.junit.Test
 import org.mockito.InjectMocks
 import org.mockito.Mock
@@ -37,9 +35,6 @@ class NewsUseCaseImplTest {
 
     @InjectMocks
     lateinit var newsRepositoryImpl: NewsRepositoryImpl
-
-    @get:Rule
-    var mainCoroutineRule = MainCoroutineRule()
 
     private lateinit var newsUseCaseImpl: NewsUseCaseImpl
 
