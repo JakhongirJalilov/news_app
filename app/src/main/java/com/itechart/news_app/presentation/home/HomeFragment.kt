@@ -47,6 +47,7 @@ class HomeFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         initRecycler()
+        exceptionsRecycler()
         initData()
         initSearch()
     }
@@ -89,6 +90,9 @@ class HomeFragment : Fragment() {
             )
             layoutManager = LinearLayoutManager(requireContext())
         }
+    }
+
+    private fun exceptionsRecycler(){
         binding.retryButton.setOnClickListener { adapterNews.retry() }
         lifecycleScope.launch {
             adapterNews.loadStateFlow.collect { loadState ->
@@ -98,7 +102,6 @@ class HomeFragment : Fragment() {
                 binding.emptyView.isVisible = isListEmpty
                 // Only show the list if refresh succeeds.
                 binding.listNews.isVisible = !isListEmpty
-
                 binding.retryButton.isVisible = loadState.source.refresh is LoadState.Error
 
                 // Toast on any error, regardless of whether it came from RemoteMediator or PagingSource

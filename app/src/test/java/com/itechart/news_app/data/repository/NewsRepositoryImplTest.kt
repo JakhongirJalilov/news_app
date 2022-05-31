@@ -23,14 +23,6 @@ import org.mockito.MockitoAnnotations
 import org.mockito.kotlin.given
 import org.mockito.kotlin.times
 
-/**
-TODO:
- * How to mock API service?
- * How to check methods with mock response?
- * How to mock Repository and call api service with error result?
- * How to test and check LiveData?
- */
-
 @ExperimentalCoroutinesApi
 class NewsRepositoryImplTest {
 
